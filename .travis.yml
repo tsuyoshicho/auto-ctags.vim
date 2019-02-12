@@ -4,14 +4,25 @@ rvm:
 dist: xenial
 services:
   - xvfb
-before_install:
-  - sudo add-apt-repository ppa:jonathonf/vim -y
-  - sudo apt update
-  - sudo apt install vim-gtk3
-  - sudo apt install exuberant-ctags
-before_script:
-  - which vim
-  - vim --version
-  - ctags --version
-  - cat Gemfile.lock
-  - "export DISPLAY=:99.0"
+  - docker
+stages:
+  - name: rake
+    if: branch != docker
+  - name: docker
+    if: branch = docker
+jobs:
+  include:
+    - stage: rake
+      before_install:
+        - sudo add-apt-repository ppa:jonathonf/vim -y
+        - sudo apt update
+        - sudo apt install vim-gtk3
+        - sudo apt install exuberant-ctags
+      before_script:
+        - which vim
+        - vim --version
+        - ctags --version
+        - cat Gemfile.lock
+      script: bundle exec rake
+    - stage: docker
+      script: sh ./run-test.sh
