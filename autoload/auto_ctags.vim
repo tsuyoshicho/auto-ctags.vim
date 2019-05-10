@@ -12,11 +12,15 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let s:File = vital#autoctags#import('System.File')
-let s:Process = vital#autoctags#import('System.Process')
 let s:Path = vital#autoctags#import('System.Filepath')
-let s:Job = vital#autoctags#import('System.Job')
-let s:Promise = vital#autoctags#import('Async.Promise')
+
 let s:Set = vital#autoctags#import('Data.Set')
+
+let s:Process = vital#autoctags#import('System.Process')
+let s:AsyncProcess = vital#autoctags#import('Async.Promise.Process')
+
+" let s:Job = vital#autoctags#import('System.Job')
+" let s:Promise = vital#autoctags#import('Async.Promise')
 
 "------------------------
 " setting
@@ -170,12 +174,7 @@ function! auto_ctags#ctags(recreate)
 
   if s:Promise.is_available() && s:Job.is_available()
     call s:lockfile_add_touch(tags_lock_path)
-    call s:Promise.new({resolve -> s:Job.start(cmd, {
-            \ 'stdout': [''],
-            \ 'stderr': [''],
-            \ 'on_exit':{ exit_status -> resolve(exit_status) },
-          \ })
-          \})
+    call s:AsyncProcess.start(cmd)
           \.catch({ exc -> execute('echomsg string(exc)', '') })
           \.finally(funcref("s:lockfile_del_remove", [tags_lock_path]))
   else
