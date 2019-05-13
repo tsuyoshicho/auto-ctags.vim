@@ -19,9 +19,6 @@ let s:Set = vital#autoctags#import('Data.Set')
 let s:Process = vital#autoctags#import('System.Process')
 let s:AsyncProcess = vital#autoctags#import('Async.Promise.Process')
 
-let s:Job = vital#autoctags#import('System.Job')
-let s:Promise = vital#autoctags#import('Async.Promise')
-
 "------------------------
 " setting
 "------------------------
@@ -172,7 +169,7 @@ function! auto_ctags#ctags(recreate)
     call delete(tags_lock_path)
   endif
 
-  if s:Promise.is_available() && s:Job.is_available()
+  if s:AsyncProcess.is_available()
     call s:lockfile_add_touch(tags_lock_path)
     call s:AsyncProcess.start(cmd)
           \.catch({ exc -> execute('echomsg string(exc)', '') })

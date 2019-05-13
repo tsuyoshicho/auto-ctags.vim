@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_autoctags#Async#Promise#Process#import() abort', printf("return map({'_vital_depends': '', 'start': '', '_vital_loaded': ''}, \"vital#_autoctags#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_autoctags#Async#Promise#Process#import() abort', printf("return map({'_vital_depends': '', 'is_available': '', 'start': '', '_vital_loaded': ''}, \"vital#_autoctags#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 function! s:_vital_loaded(V) abort
@@ -25,6 +25,13 @@ function! s:start(args, ...) abort
         \}, a:0 ? a:1 : {},
         \)
   return s:Promise.new(funcref('s:_executor', [a:args, options]))
+endfunction
+
+function! s:is_available() abort
+  if !has('patch-8.0.0107') && !has('nvim-0.2.0')
+    return 0
+  endif
+  return s:Promise.is_available() && s:Job.is_available()
 endfunction
 
 function! s:_executor(args, options, resolve, ...) abort
